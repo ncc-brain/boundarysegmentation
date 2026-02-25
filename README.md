@@ -158,27 +158,8 @@ Or run the full sanity script: `bash run_sherlock_sanity.sh`
 By default the sanity script uses `Qwen/Qwen3-VL-2B-Instruct` for segmentation and skips describer (`RUN_DESCRIBER=0`).  
 Enable describer explicitly with: `RUN_DESCRIBER=1 bash run_sherlock_sanity.sh`
 
-## Verified on This Machine
 
-| Step | Runtime (approx) | Output path |
-|------|------------------|-------------|
-| UBoCo short (60s, 2 epochs) | ~22 s | `outputs/sanity_uboco/uboco_boundaries.json`, `boundary_times.txt` |
-| Qwen3 segment short (10s) | ~40 s | `outputs/sanity_qwen_segment/boundaries.json`, `boundary_times.txt` |
-| Qwen3 describer debug (1 window) | ~25 min (cold load + first generation) | `outputs/sanity_qwen_describer/debug_first_window/window_00000/` |
-| Reference (default) | — | `references/sherlock_reference_boundaries_from_ubeco.txt` |
-| evaluate_boundaries | &lt;1 s | `outputs/sanity_eval/uboco_vs_reference.json`, `qwen_vs_reference.json` |
 
-## Recorded UBECO / Qwen3 Reference Metrics
-
-The repository includes recorded metric snapshots for traceability:
-
-- `references/ubeco_eval_metrics_scenes.json`
-  - `frames_10` F1 = `0.1509433962264151`
-  - `frames_100` F1 = `0.18867924528301885`
-- `references/qwen3_eval_metrics_ws12_prompt.json`
-  - `frames_50` F1 = `0.3018867924528302`
-  - `frames_100` F1 = `0.49056603773584906`
-  - `frames_125` F1 = `0.5283018867924528`
 
 ## Known-Good Sherlock Parameter Sets
 
@@ -211,19 +192,3 @@ python extra/run_qwen_on_gebd_eval.py --video-dir /path/to/videos --max-videos 2
 python extra/run_qwen_on_gebd_eval.py --video-dir /path/to/videos --only-video <vid_id>
 ```
 
-## Repo Init / Push (without actually pushing)
-
-```bash
-# Initialize git repo
-git init
-
-# Add remote (example)
-git remote add origin <your-repo-url>
-
-# Stage and commit
-git add .
-git commit -m "Initial boundary segmentation project"
-
-# Push (when ready)
-# git push -u origin main
-```

@@ -93,5 +93,6 @@ python qwen.py sherlock.mp4 --model Qwen/Qwen3-VL-2B-Instruct --response-mode bi
 
 ## Notes
 
-- Sanity eval uses `references/sherlock_reference_boundaries_from_ubeco.txt`, which is a reference set derived from prior model output, not human GT.
+- Sherlock spreadsheet annotations are included as `Sherlock_Segments_1000_NN_2017.xlsx`.
+- Sanity eval uses `references/sherlock_reference_boundaries_from_ubeco.txt` by default for fast reproducibility.
 - Full details and GEBD batch examples are in `README.md`.

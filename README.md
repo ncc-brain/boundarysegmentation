@@ -2,11 +2,13 @@
 
 Temporal event boundary detection for video using UBoCo (contrastive kernel), Qwen3-VL segmenter, and Qwen3-Omni describer.
 
-> **Note:** The folder name is intentionally spelled `boundry_segmentation` (not "boundary").
+
 >
 > For a fast handoff flow, start with `QUICKSTART.md`.
 >
 > For canonical commands only, see `PIPELINES.md`.
+>
+> Non-core and research/analysis scripts are organized under `extra/`.
 
 ## Project Overview
 
@@ -119,7 +121,9 @@ The describer can be slow on a first run because Qwen3-Omni-30B has a heavy cold
 
 ## Short Eval Workflow
 
-**Note:** Sherlock ground truth is not included in this repo. The sanity eval uses **reference boundaries derived from ubeco_sherlock output** (not human GT). The default reference file is `references/sherlock_reference_boundaries_from_ubeco.txt`. If that file is missing, `run_sherlock_sanity.sh` falls back to extracting from `outputs/captions_stride12/transfer boundaries/ubeco_sherlock.json`.
+Sherlock annotation data is included as `Sherlock_Segments_1000_NN_2017.xlsx`.
+
+The sanity script defaults to `references/sherlock_reference_boundaries_from_ubeco.txt` for a lightweight, reproducible smoke check. You can also evaluate directly against the spreadsheet GT.
 
 1. Reference boundaries: use `references/sherlock_reference_boundaries_from_ubeco.txt` (included in repo), or extract manually if needed:
    ```bash
@@ -136,6 +140,17 @@ The describer can be slow on a first run because Qwen3-Omni-30B has a heavy cold
    ```bash
    python evaluate_boundaries.py outputs/sanity_uboco/boundary_times.txt references/sherlock_reference_boundaries_from_ubeco.txt --fps 25 --tolerances 5 10 15 --output outputs/sanity_eval/uboco_vs_reference.json
    python evaluate_boundaries.py outputs/sanity_qwen_segment/boundaries.json references/sherlock_reference_boundaries_from_ubeco.txt --fps 25 --tolerances 5 10 15 --output outputs/sanity_eval/qwen_vs_reference.json
+   ```
+
+3. Evaluate against Sherlock spreadsheet GT (segment end times):
+   ```bash
+   python evaluate_boundaries.py outputs/sanity_uboco/boundary_times.txt Sherlock_Segments_1000_NN_2017.xlsx --fps 25 --tolerances 5 10 15 --gt_column "End Time (s) " --output outputs/sanity_eval/uboco_vs_sherlock_xlsx.json
+   python evaluate_boundaries.py outputs/sanity_qwen_segment/boundaries.json Sherlock_Segments_1000_NN_2017.xlsx --fps 25 --tolerances 5 10 15 --gt_column "End Time (s) " --output outputs/sanity_eval/qwen_vs_sherlock_xlsx.json
+   ```
+
+4. Optional coarse-scene boundary eval from spreadsheet scene markers:
+   ```bash
+   python evaluate_boundaries.py outputs/sanity_uboco/boundary_times.txt Sherlock_Segments_1000_NN_2017.xlsx --fps 25 --tolerances 5 10 15 --coarse-scenes --output outputs/sanity_eval/uboco_vs_sherlock_coarse_scenes.json
    ```
 
 Or run the full sanity script: `bash run_sherlock_sanity.sh`
@@ -184,16 +199,16 @@ For full GEBD evaluation (requires GT pickle and video dir):
 
 ```bash
 # UBoCo: limit to 2 videos
-python run_uboco_on_gebd_eval.py --video-dir /path/to/videos --max-videos 2
+python extra/run_uboco_on_gebd_eval.py --video-dir /path/to/videos --max-videos 2
 
 # UBoCo: single video by ID
-python run_uboco_on_gebd_eval.py --video-dir /path/to/videos --only-video <vid_id>
+python extra/run_uboco_on_gebd_eval.py --video-dir /path/to/videos --only-video <vid_id>
 
 # Qwen: limit to 2 videos
-python run_qwen_on_gebd_eval.py --video-dir /path/to/videos --max-videos 2
+python extra/run_qwen_on_gebd_eval.py --video-dir /path/to/videos --max-videos 2
 
 # Qwen: single video
-python run_qwen_on_gebd_eval.py --video-dir /path/to/videos --only-video <vid_id>
+python extra/run_qwen_on_gebd_eval.py --video-dir /path/to/videos --only-video <vid_id>
 ```
 
 ## Repo Init / Push (without actually pushing)

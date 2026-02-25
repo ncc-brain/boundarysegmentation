@@ -1,0 +1,66 @@
+# Environments
+envs/
+venv/
+.venv/
+.env/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Outputs and temp (keep source/docs/references tracked)
+outputs/
+outputs_uboco*/
+temp_outputs/
+
+# Heavy experiment/result artifacts (keep source, tests, tools, README, scripts, references)
+grid_runs_dino_all_layers/
+grid_runs_clip_all_layers/
+grid_runs_full/
+grid_runs_full2/
+grid_runs_smoke/
+efficient_grid_runs/
+sherlock_dinov2/
+sherlock_clip_vit_l/
+plots/
+plots_dinov2/
+plots_clip_vit_l/
+scenes_plots/
+layer_comparison/
+wandb/
+boundary_segmentation
+
+# Videos and media
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.webm
+*.m4v
+videos/
+media/
+
+# Caches
+.cache/
+~/.cache/
+*.pkl
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

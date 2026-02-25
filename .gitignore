@@ -17,6 +17,7 @@ __pycache__/
 
 # Jupyter
 .ipynb_checkpoints/
+tests/artifacts/
 
 # Outputs and temp (keep source/docs/references tracked)
 outputs/

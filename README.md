@@ -1,15 +1,19 @@
 # Boundary Segmentation
 
-Temporal event boundary detection for video using UBoCo (contrastive kernel), Qwen2.5-VL segmenter, and Qwen3-Omni describer.
+Temporal event boundary detection for video using UBoCo (contrastive kernel), Qwen3-VL segmenter, and Qwen3-Omni describer.
 
 > **Note:** The folder name is intentionally spelled `boundry_segmentation` (not "boundary").
+>
+> For a fast handoff flow, start with `QUICKSTART.md`.
+>
+> For canonical commands only, see `PIPELINES.md`.
 
 ## Project Overview
 
 This project provides tools for detecting event boundaries in videos:
 
 - **UBoCo** – Unsupervised Boundary Contrastive Learning (Kang et al., CVPR 2022) with RTP contrastive kernel boundary detection
-- **Qwen segment** – Qwen2.5-VL sliding-window binary/JSON boundary prediction
+- **Qwen segment** – Qwen3-VL sliding-window binary boundary prediction
 - **Qwen describer** – Qwen3-Omni detailed video understanding (scene descriptions, audio transcription)
 
 Outputs can be evaluated against reference boundaries using `evaluate_boundaries.py`.
@@ -40,7 +44,7 @@ Exact versions observed:
 | matplotlib | 3.10.6 |
 | seaborn | 0.13.2 |
 
-Additional: `PIL`, `qwen-vl-utils` (for Qwen2.5-VL), `qwen_omni_utils` (for Qwen3-Omni). **Optional:** `ffmpeg` for audio/video extraction.
+Additional: `PIL`, `qwen-vl-utils` (for Qwen3-VL), `qwen_omni_utils` (for Qwen3-Omni). **Optional:** `ffmpeg` for audio/video extraction.
 
 ## Required Data
 
@@ -82,6 +86,17 @@ python uboco_gebd.py sherlock.mp4 \
 
 ```bash
 python qwen.py sherlock.mp4 \
+  --model Qwen/Qwen3-VL-30B-A3B-Instruct \
+  --response-mode binary \
+  --end-time 10 \
+  --output-dir outputs/sanity_qwen_segment
+```
+
+Quick sanity alternative (smaller model):
+
+```bash
+python qwen.py sherlock.mp4 \
+  --model Qwen/Qwen3-VL-2B-Instruct \
   --response-mode binary \
   --end-time 10 \
   --output-dir outputs/sanity_qwen_segment
@@ -91,6 +106,7 @@ python qwen.py sherlock.mp4 \
 
 ```bash
 python qwen_omni_describer.py sherlock.mp4 \
+  --model Qwen/Qwen3-Omni-30B-A3B-Instruct \
   --debug-save outputs/sanity_qwen_describer/debug_first_window \
   --end-time 8 \
   --window-size 4 \
@@ -98,6 +114,8 @@ python qwen_omni_describer.py sherlock.mp4 \
   --sample-fps 1 \
   --output-dir outputs/sanity_qwen_describer
 ```
+
+The describer can be slow on a first run because Qwen3-Omni-30B has a heavy cold load plus generation.
 
 ## Short Eval Workflow
 
@@ -122,19 +140,34 @@ python qwen_omni_describer.py sherlock.mp4 \
 
 Or run the full sanity script: `bash run_sherlock_sanity.sh`
 
+By default the sanity script uses `Qwen/Qwen3-VL-2B-Instruct` for segmentation and skips describer (`RUN_DESCRIBER=0`).  
+Enable describer explicitly with: `RUN_DESCRIBER=1 bash run_sherlock_sanity.sh`
+
 ## Verified on This Machine
 
 | Step | Runtime (approx) | Output path |
 |------|------------------|-------------|
 | UBoCo short (60s, 2 epochs) | ~22 s | `outputs/sanity_uboco/uboco_boundaries.json`, `boundary_times.txt` |
-| Qwen segment short (10s) | ~40 s | `outputs/sanity_qwen_segment/boundaries.json`, `boundary_times.txt` |
-| Qwen describer debug (1 window) | ~25 min | `outputs/sanity_qwen_describer/debug_first_window/window_00000/` |
+| Qwen3 segment short (10s) | ~40 s | `outputs/sanity_qwen_segment/boundaries.json`, `boundary_times.txt` |
+| Qwen3 describer debug (1 window) | ~25 min (cold load + first generation) | `outputs/sanity_qwen_describer/debug_first_window/window_00000/` |
 | Reference (default) | — | `references/sherlock_reference_boundaries_from_ubeco.txt` |
 | evaluate_boundaries | &lt;1 s | `outputs/sanity_eval/uboco_vs_reference.json`, `qwen_vs_reference.json` |
 
+## Recorded UBECO / Qwen3 Reference Metrics
+
+The repository includes recorded metric snapshots for traceability:
+
+- `references/ubeco_eval_metrics_scenes.json`
+  - `frames_10` F1 = `0.1509433962264151`
+  - `frames_100` F1 = `0.18867924528301885`
+- `references/qwen3_eval_metrics_ws12_prompt.json`
+  - `frames_50` F1 = `0.3018867924528302`
+  - `frames_100` F1 = `0.49056603773584906`
+  - `frames_125` F1 = `0.5283018867924528`
+
 ## Known-Good Sherlock Parameter Sets
 
-From `outputs_uboco_50secs/params.txt` and existing outputs:
+From `references/uboco_sherlock_params.txt` and existing outputs:
 
 **UBoCo (peaks):**
 - `--boundary_method peaks`

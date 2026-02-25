@@ -1,0 +1,11 @@
+python /pfss/mlde/workspaces/mlde_wsp_ChildScope/br/boundry_segmentation/uboco_gebd.py \
+  /pfss/mlde/workspaces/mlde_wsp_ChildScope/br/boundry_segmentation/sherlock.mp4 \
+  --boundary_method peaks \
+  --rtp_kernel_size 5 \
+  --rtp_min_length 50 \
+  --rtp_threshold_diff 0.3 \
+  --rtp_max_depth 3 \
+  --rtp_max_boundaries 30 \
+  --peaks_distance 30 \
+  --peaks_prominence 0.6 \
+  --peaks_max_boundaries 25

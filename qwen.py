@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 qwen_temporal_segmentation_fixed.py
-Implementation for Qwen2-VL and Qwen2.5-VL temporal video segmentation
-Supports both Qwen2-VL and Qwen2.5-VL model architectures
+Temporal video segmentation for Qwen vision-language models.
+Tested with Qwen3-VL model families.
 """
 
 import argparse
@@ -51,7 +51,7 @@ def device_name():
 class QwenTemporalSegmenterFixed:
     def __init__(
         self,
-        model_name: str = "Qwen/Qwen2.5-VL-7B-Instruct",
+        model_name: str = "Qwen/Qwen3-VL-30B-A3B-Instruct",
         device: Optional[str] = None,
         prompt_type: str = "small",
         response_mode: str = "json",
@@ -59,8 +59,8 @@ class QwenTemporalSegmenterFixed:
         processor: Optional[Any] = None,
     ):
         """
-        Initialize with Qwen2-VL and Qwen2.5-VL model loading.
-        Automatically selects the correct model class based on the model architecture.
+        Initialize with Qwen VL model loading.
+        AutoModelForVision2Seq handles architecture-specific loading.
         """
         valid_modes = {"json", "binary"}
         if response_mode not in valid_modes:
@@ -81,8 +81,8 @@ class QwenTemporalSegmenterFixed:
             self.processor = processor
         else:
             # Load the correct model class
-            # Use AutoModelForVision2Seq which supports both Qwen2-VL and Qwen2.5-VL
-            print(f"[INFO] Loading Qwen2.5-VL model: {model_name}")
+            # AutoModelForVision2Seq supports Qwen VL variants (including Qwen3-VL).
+            print(f"[INFO] Loading Qwen VL model: {model_name}")
             self.model = AutoModelForVision2Seq.from_pretrained(
                 model_name,
                 torch_dtype=torch.float16 if self.device != "cpu" else torch.float32,
@@ -978,10 +978,10 @@ class QwenTemporalSegmenterFixed:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Qwen2-VL and Qwen2.5-VL temporal segmentation")
+    parser = argparse.ArgumentParser(description="Qwen3-VL temporal segmentation")
     parser.add_argument("video", type=str, help="Path to input video")
-    parser.add_argument("--model", type=str, default="Qwen/Qwen2.5-VL-32B-Instruct",
-                       help="Model name (e.g., Qwen/Qwen2.5-VL-7B-Instruct or Qwen/Qwen2.5-VL-32B-Instruct)")
+    parser.add_argument("--model", type=str, default="Qwen/Qwen3-VL-30B-A3B-Instruct",
+                       help="Model name (e.g., Qwen/Qwen3-VL-2B-Instruct or Qwen/Qwen3-VL-30B-A3B-Instruct)")
     parser.add_argument("--prompt-type", type=str, choices=["small", "narrative", "context", "semantic"], default="small",
                        help="Prompt style: 'small' (default), or major-scene prompts: 'narrative' | 'context' | 'semantic'")
     parser.add_argument("--response-mode", type=str, choices=["json", "binary"], default="json",

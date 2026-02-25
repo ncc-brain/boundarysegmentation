@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run Sherlock sanity check: UBoCo + Qwen segment + Qwen describer, then evaluate against reference.
+# Run Sherlock sanity check: UBoCo + Qwen segment (+ optional Qwen describer), then evaluate against reference.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -7,6 +7,8 @@ cd "$SCRIPT_DIR"
 
 PYTHON="${PYTHON:-python}"
 VIDEO="${VIDEO:-sherlock.mp4}"
+QWEN_SEG_MODEL="${QWEN_SEG_MODEL:-Qwen/Qwen3-VL-2B-Instruct}"
+RUN_DESCRIBER="${RUN_DESCRIBER:-0}"
 
 # Output dirs (relative to project root)
 UBOCO_OUT="outputs/sanity_uboco"
@@ -40,20 +42,28 @@ echo "=== 1. UBoCo short run ==="
 
 echo ""
 echo "=== 2. Qwen segment short run (binary) ==="
+echo "Using Qwen segment model: $QWEN_SEG_MODEL"
 "$PYTHON" qwen.py "$VIDEO" \
+  --model "$QWEN_SEG_MODEL" \
   --response-mode binary \
   --end-time 10 \
   --output-dir "$QWEN_SEG_OUT"
 
 echo ""
-echo "=== 3. Qwen describer short debug run (first window only) ==="
-"$PYTHON" qwen_omni_describer.py "$VIDEO" \
-  --debug-save "$QWEN_DESC_OUT/debug_first_window" \
-  --end-time 8 \
-  --window-size 4 \
-  --stride 4 \
-  --sample-fps 1 \
-  --output-dir "$QWEN_DESC_OUT"
+if [[ "$RUN_DESCRIBER" == "1" ]]; then
+  echo "=== 3. Qwen describer short debug run (first window only) ==="
+  echo "Model cold load can be slow on first run (Qwen3-Omni-30B)."
+  "$PYTHON" qwen_omni_describer.py "$VIDEO" \
+    --debug-save "$QWEN_DESC_OUT/debug_first_window" \
+    --end-time 8 \
+    --window-size 4 \
+    --stride 4 \
+    --sample-fps 1 \
+    --output-dir "$QWEN_DESC_OUT"
+else
+  echo "=== 3. Qwen describer skipped (RUN_DESCRIBER=$RUN_DESCRIBER) ==="
+  echo "Set RUN_DESCRIBER=1 to run Qwen3-Omni describer debug."
+fi
 
 echo ""
 echo "=== 4. Reference boundaries for eval ==="

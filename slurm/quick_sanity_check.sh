@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --partition=fatgpu
+#SBATCH --partition=fat_gpu
 #SBATCH --gpus=1
 #SBATCH --job-name=sherlock_quick_sanity
 #SBATCH --account=melloldm_0000

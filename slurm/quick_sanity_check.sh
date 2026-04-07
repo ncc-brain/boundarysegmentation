@@ -11,6 +11,10 @@
 args="$@"
 set --
 
+rub-deploy-spack-configs-2026
+module load spack/2026
+spack install miniforge3
+
 conda init
 conda activate boundarysegmentation
 

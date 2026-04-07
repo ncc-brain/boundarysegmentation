@@ -15,4 +15,4 @@ conda activate boundarysegmentation
 
 cd ~/projects/boundarysegmentation
 
-python run_sherlock_sanity.sh $args
+bash run_sherlock_sanity.sh $args

@@ -11,6 +11,7 @@
 args="$@"
 set --
 
+conda init
 conda activate boundarysegmentation
 
 cd ~/projects/boundarysegmentation

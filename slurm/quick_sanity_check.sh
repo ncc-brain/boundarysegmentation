@@ -10,7 +10,7 @@
 args="$@"
 set --
 
-conda init
+source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate boundarysegmentation
 
 cd ~/projects/boundarysegmentation
